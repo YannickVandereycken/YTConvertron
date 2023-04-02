@@ -3,6 +3,7 @@ from pytube.cli import on_progress
 import ffmpeg
 from pytube import Playlist
 import re
+from hurry.filesize import size
 
 def convert(form,url,format=None,outputPath='.'):
     if not url:
@@ -35,19 +36,30 @@ def convert_video(form,url,format=None,outputPath='.'):
         match format:
             case 'MP3':
                 yt = YouTube(url,on_progress_callback=on_progress)
-                print(f"The file is approx {yt.streams.get_audio_only().filesize_approx} bytes big")
+                yt_stream = yt.streams.get_audio_only()
+                yt_size = size(yt_stream.filesize_approx)#yt_stream.filesize_approx
+                print(size(yt_size))
+                print(f"The file is approx {yt_size} big")
                 path = yt.streams.get_audio_only().download(output_path=outputPath,filename=f'{yt.title}.mp3')
                 form.commandLineOut.append(f"{yt.title} has been downloaded.")
                 return path
 
             case 'LowMP4':
                 yt = YouTube(url,on_progress_callback=on_progress)
+                yt_stream = yt.streams.get_lowest_resolution()
+                yt_size = size(yt_stream.filesize_approx)#yt_stream.filesize_approx
+                print(size(yt_size))
+                print(f"The file is approx {yt_size} big")
                 path = yt.streams.get_lowest_resolution().download(output_path=outputPath,filename=f'{yt.title}_low.mp4')
                 form.commandLineOut.append(f"{yt.title} has been downloaded.")
                 return path
 
             case '720pMP4':
                 yt = YouTube(url,on_progress_callback=on_progress)
+                yt_stream = yt.streams.get_highest_resolution()
+                yt_size = size(yt_stream.filesize_approx)#yt_stream.filesize_approx
+                print(size(yt_size))
+                print(f"The file is approx {yt_size} big")
                 path = yt.streams.get_highest_resolution().download(output_path=outputPath,filename=f'{yt.title}_720p.mp4')
                 form.commandLineOut.append(f"{yt.title} has been downloaded.")
                 return path
